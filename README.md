@@ -10,7 +10,7 @@ The dataset contains information about individuals including:
 - bmi: Body mass index, providing an understanding of body, weights that are relatively high or low relative to height, objective index of body weight (kg / m^2) using the ratio of weight to square of height, ideally 18.5 to 24.9
 - children: Number of children covered by health insurance / Number of dependents
 - smoker: Smoker or not
-- region: the beneficiary's residential area in the US, northeast, southeast, southwest, northwest.
+- region: the beneficiary's residential area in the  northeast, southeast, southwest, northwest.
 - charges: Individual medical costs billed by health insurance
 
 ## Exploratory Data Analysis (EDA)
