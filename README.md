@@ -28,12 +28,16 @@ The notebook includes comprehensive visualizations to understand the relationshi
 - Age and smoker status have strong positive correlations with charges (0.534 and 0.663 respectively)
 - Number of children also shows a positive correlation with charges (0.133)
 - Sex and region have minimal correlation with charges
+- Smokers have significantly higher charges across all age groups
+- Clear linear relationship between age and charges for smokers
 
 ## Data Preprocessing
 
 ### Feature Engineering
-- **smoker_bmi**: Interaction feature (smoker indicator × BMI)
-- **smoker_age**: Interaction feature (smoker indicator × age)
+- **smoker_bmi**: Interaction feature (smoker indicator × BMI) - captures the combined effect of smoking on BMI-related charges
+- **smoker_age**: Interaction feature (smoker indicator × age) - captures the combined effect of smoking and age on charges
+
+These engineered features significantly improve model performance, especially for high-charge cases.
 
 ### Encoding Strategy
 - **Numerical features** (age, bmi, children, smoker_bmi, smoker_age): StandardScaler normalization
@@ -57,26 +61,94 @@ All models are trained within a scikit-learn Pipeline for reproducibility and pr
 
 ## Model Evaluation
 
-Models are evaluated using cross-validation (5-fold KFold) with the following metrics:
+### Cross-Validation Results (Without Hyperparameter Tuning)
+
+![Model Performance Without Tuning](plots/model_normal.png)
+
+**MAE Scores:**
+- **Random Forest Regressor**: MAE ≈ $2,702.42
+- **Gradient Boosting Regressor**: MAE ≈ $2,683.45
+- **Decision Tree Regressor**: MAE ≈ $3,162.45
+- **XGBoost Regressor**: MAE ≈ $3,257.37
+
+### Hyperparameter Tuning Results
+
+![Model Performance After Hyperparameter Tuning](plots/models_hyperparameter.png)
+
+After hyperparameter optimization, both Gradient Boosting and XGBoost models show improved performance. XGBoost particularly benefits from tuning, becoming competitive with Gradient Boosting.
+
+**Key Findings:**
+- Feature engineering with `smoker_bmi` and `smoker_age` provides more balanced predictions
+- Both GBM and XGBoost have similar performance patterns but struggle with extremely high charges
+- After feature engineering, prediction accuracy for high-charge cases improves significantly
+
+## Model Residual Analysis
+
+### Residual Distribution (Histogram)
+
+![Residual Histogram](plots/residual_histogram.png)
+
+Comparison of residuals between the top performing models (Gradient Boosting and XGBoost). The histograms show:
+- Both models have similar residual distributions
+- Some outliers present, particularly for extremely high charges
+- Feature engineering helps balance the residuals
+- Distribution is approximately centered around zero
+
+### Residual Plot (Scatter)
+
+![Residual Plot](plots/residual_plot.png)
+
+Scatter plot showing residuals vs predicted values for both models:
+- Reveals heteroscedasticity in prediction errors
+- Models struggle with extreme high-value charges
+- Feature engineering (`smoker_bmi` and `smoker_age`) significantly improves balance
+- Both GBM and XGBoost show similar patterns
+
+## Model Predictions vs Actual Values
+
+![Actual vs Predicted Charges](plots/scatter_plot.png)
+
+Scatter plot comparing predicted charges against actual charges:
+- Points close to the diagonal line indicate accurate predictions
+- Both models perform well for typical charges
+- Limitations visible for extremely high-charge cases
+- Overall strong correlation between predicted and actual values
+
+## Results Summary
+
+**Top Performing Models:**
+1. **Gradient Boosting Regressor** - Strong performance on this dataset
+2. **XGBoost Regressor** - Comparable performance, especially after hyperparameter tuning
+
+**Important Note:** These results are based on a relatively small dataset (1,338 samples). Performance and generalization on larger datasets cannot be guaranteed without additional validation on diverse data.
+
+**Model Evaluation Metrics:**
 - **Mean Absolute Error (MAE)**: Average absolute difference between predicted and actual values
 - **Mean Squared Error (MSE)**: Average squared differences
 - **Root Mean Squared Error (RMSE)**: Square root of MSE
 - **Mean Absolute Percentage Error (MAPE)**: Average percentage error
 - **R-squared**: Coefficient of determination
 
-## Results
+**Key Takeaways:**
+- Feature engineering significantly improves model performance
+- Gradient Boosting and XGBoost perform similarly on this dataset
+- Models handle typical insurance charges well but struggle with extreme outliers
+- Hyperparameter tuning provides incremental improvements in accuracy
+- Results are dataset-specific; testing on larger/different datasets is recommended for robust conclusions
 
-Cross-validation results show:
-- **Random Forest Regressor**: MAE ≈ $2,702.42
-- **Gradient Boosting Regressor**: MAE ≈ $2,683.45 (Best performer)
-- **Decision Tree Regressor**: MAE ≈ $3,162.45
-- **XGBoost Regressor**: MAE ≈ $3,257.37
+## How to Use This Project
 
-The Gradient Boosting Regressor provides the most accurate predictions.
+1. Clone the repository
+2. Install required dependencies: `pip install -r requirements.txt`
+3. Run the Jupyter notebook: `jupyter notebook Insurance_Charges.ipynb`
+4. Follow the analysis steps from EDA through model evaluation and hyperparameter tuning
 
-## Visualization of Results
+## Requirements
 
-- Residual plots to assess model assumptions
-- Histograms of residuals to check for normality
-- Scatter plots of actual vs. predicted charges to visualize predictive accuracy
-- Model comparison using cross-validation metrics
+- pandas
+- numpy
+- scikit-learn
+- matplotlib
+- seaborn
+- xgboost
+- jupyter
